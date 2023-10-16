@@ -1,7 +1,7 @@
 # auth-system-user
 Auth System Login 
 
-## tecnologies:
+## technologies:
 * Java 11
 * VueJS
 * MariaDB
