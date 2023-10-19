@@ -34,9 +34,17 @@ public class AuthenticationService {
         authenticationManager = context.getBean(AuthenticationManager.class);
 // verifica as credenciais de login e rotorna a geração do token
         var usernamePassword = new UsernamePasswordAuthenticationToken(loginDTO.getEmail(), loginDTO.getPassword());
-        var auth = this.authenticationManager.authenticate(usernamePassword); // vai mudar o status para authenticate = true
+        var auth = this.authenticationManager.authenticate(usernamePassword);
         var token = jwtService.generateToken((User) auth.getPrincipal()); // vai gerar o token com o username
+
+
+        // verificar o token em um token repository ??
+
         return ResponseEntity.ok(new TokenDTO(token)); // retorna o token
+
+        //refresh token a cada novo login
+        // crie um repo de tokens para manter os que estao validos na sessao e caso esteja resgatar -- logout para remover o token da lista client ou servidor ???
+
     }
 
 

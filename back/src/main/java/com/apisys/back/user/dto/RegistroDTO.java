@@ -8,5 +8,5 @@ public class RegistroDTO {
 
     private String username;
     private String password;
-    private Role role;
+    private Role role; // padrao de registro de usuario e USER
 }
