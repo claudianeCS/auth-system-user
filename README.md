@@ -10,4 +10,5 @@ Auth System Login
 * SpringSecurity
 
 ## endpoints
-For create a new user `/auth/register` and into in login action `/auth/login`
+For create a new user `/auth/register` 
+and into in login action `/auth/login`
