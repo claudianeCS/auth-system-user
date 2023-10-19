@@ -1,4 +1,4 @@
-package com.loginsys.back.entity.dto;
+package com.apisys.back.user.dto;
 
 import lombok.Data;
 
@@ -6,6 +6,5 @@ import lombok.Data;
 public class LoginDTO {
 
     private String email;
-
     private String password;
 }
