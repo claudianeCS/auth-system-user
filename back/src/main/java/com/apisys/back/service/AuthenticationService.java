@@ -1,24 +1,28 @@
 package com.apisys.back.service;
 
-import com.apisys.back.security.JwtService;
+import com.apisys.back.security.TokenService;
 import com.apisys.back.user.User;
 import com.apisys.back.user.dto.LoginDTO;
-import com.apisys.back.user.dto.RegistroDTO;
-import com.apisys.back.user.dto.TokenDTO;
+import com.apisys.back.user.dto.LoginResponseDTO;
+import com.apisys.back.user.dto.RegisterDTO;
 import com.apisys.back.user.repo.UserRepository;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Date;
 
 @Service
-public class AuthenticationService {
+public class AuthenticationService implements UserDetailsService {
 
     @Autowired
     private ApplicationContext context;
@@ -27,38 +31,35 @@ public class AuthenticationService {
     private UserRepository userRepository;
 
     @Autowired
-    private JwtService jwtService;
+    private TokenService tokenService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        return userRepository.findByEmail(email);
+    }
 
     private AuthenticationManager authenticationManager;
-    public ResponseEntity<Object> login(LoginDTO loginDTO) {
+
+    public ResponseEntity<Object> login(@RequestBody @Valid LoginDTO data){
         authenticationManager = context.getBean(AuthenticationManager.class);
-// verifica as credenciais de login e rotorna a geração do token
-        var usernamePassword = new UsernamePasswordAuthenticationToken(loginDTO.getEmail(), loginDTO.getPassword());
+
+        var usernamePassword = new UsernamePasswordAuthenticationToken(data.email(), data.password());
         var auth = this.authenticationManager.authenticate(usernamePassword);
-        var token = jwtService.generateToken((User) auth.getPrincipal()); // vai gerar o token com o username
-
-
-        // verificar o token em um token repository ??
-
-        return ResponseEntity.ok(new TokenDTO(token)); // retorna o token
-
-        //refresh token a cada novo login
-        // crie um repo de tokens para manter os que estao validos na sessao e caso esteja resgatar -- logout para remover o token da lista client ou servidor ???
-
+        var token = tokenService.generateToken((User) auth.getPrincipal());
+        return ResponseEntity.ok(new LoginResponseDTO(token));
     }
 
+    public ResponseEntity<Object> register (@RequestBody RegisterDTO registerDto){
+        if (this.userRepository.findByEmail(registerDto.email()) != null ) return ResponseEntity.badRequest().build();
+        String encryptedPassword = passwordEncoder.encode(registerDto.password());
 
-    public ResponseEntity<Object> register(@RequestBody RegistroDTO registroDTO){
-
-        User userEmail = userRepository.findByEmail(registroDTO.getUsername());
-        if (userEmail !=null ) {
-            return ResponseEntity.badRequest().build(); // se houver um email existente ele vai retornar um Bad Resquest
-        }
-        String encryptedPassword = new BCryptPasswordEncoder().encode(registroDTO.getPassword()); // encriptografa a senha
-
-        User newUser = new User(registroDTO.getUsername(), encryptedPassword, registroDTO.getRole());
-        newUser.setCreatedAt(new Date(System.currentTimeMillis())); //seta a data de criação
-        this.userRepository.save(newUser); // salva
-        return ResponseEntity.ok().build(); // retorna o status de usuario logado !!!
+        User newUser = new User(registerDto.email(), encryptedPassword, registerDto.role());
+        newUser.setCreatedAt(new Date(System.currentTimeMillis()));
+        this.userRepository.save(newUser);
+        return ResponseEntity.ok().build();
     }
+
 }
