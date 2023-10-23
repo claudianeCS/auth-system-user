@@ -14,7 +14,7 @@ import java.time.ZoneOffset;
 @Service
 public class TokenService {
 
-    private String secret = "sysapi";
+    protected final String secret = "sysapi";
 
     public String generateToken(User userModel){
         try {
@@ -50,6 +50,8 @@ public class TokenService {
     }
 
     private Instant getExpirationDate(){
-        return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-03:00"));
+        Instant dateLocal = LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-03:00"));
+        System.out.println(dateLocal);
+        return dateLocal;
     }
 }

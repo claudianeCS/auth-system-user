@@ -13,11 +13,11 @@
                 </div>
                 <div class="content-form">
                     <label for=""></label>
-                    <input class="input-form" type="text" id="pass_conf" name="pass_conf" placeholder="*Password" required>
+                    <input class="input-form" type="password" id="pass_conf" @change="onChangeInput()" name="pass_conf" placeholder="*Password" required>
                 </div>
                 <div class="content-form">
                     <label for=""></label>
-                    <input class="input-form" type="text" id="pass_def" name="pass_def" placeholder="Confirm password">
+                    <input class="input-form" type="password" id="pass_def" name="pass_def" placeholder="Confirm password">
                 </div>
                 <button id="btn-enter" type="submit">ENTER</button>   
             </form>
