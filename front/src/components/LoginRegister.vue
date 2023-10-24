@@ -4,20 +4,23 @@
             <h1>REGISTER</h1>
             <form id="form_register" @submit="createANewUser">
                 <div class="content-form">
-                    <label for=""></label>
-                    <input class="input-form" type="text" id="username" name="username" placeholder="*Username" required>
+                    <i class="icons-put fa-solid fa-user-plus"></i>
+                    <input class="input-form" type="text" id="username" name="username" v-model="firstname" placeholder=" First name">
                 </div>
                 <div class="content-form">
-                    <label for=""></label>
-                    <input class="input-form" type="text" id="email" name="email" placeholder="*Email" required>
+                    <i class=" icons-put fa-solid fa-envelope"></i>
+                    <input class="input-form" type="text" id="email" name="email" v-model="email" placeholder=" E-mail">
                 </div>
                 <div class="content-form">
-                    <label for=""></label>
-                    <input class="input-form" type="password" id="pass_conf" @change="onChangeInput()" name="pass_conf" placeholder="*Password" required>
+                    <i class="icons-put fa-solid fa-lock"></i>
+                    <input class="input-form invalid-password" type="password" id="password" name="passoword" v-model="password" placeholder=" Password" @change="onChangeInput(password)">
+                </div>
+                <div class="password-rules">
+                    <i class="pointer fa-solid fa-circle fa-2xs"></i> One uppercase letter and 8 characters.
                 </div>
                 <div class="content-form">
-                    <label for=""></label>
-                    <input class="input-form" type="password" id="pass_def" name="pass_def" placeholder="Confirm password">
+                    <i class="icons-put fa-solid fa-lock"></i>
+                    <input class="input-form" type="password" id="pass_def" name="pass_def" v-model="conf_password" placeholder=" Confirm password">
                 </div>
                 <button id="btn-enter" type="submit">ENTER</button>   
             </form>
@@ -25,32 +28,91 @@
     </div>
 </template>
 <script>
+import axios from 'axios';
 
     export default{
         name:'LoginRegister',
         data(){
             return{
-                username: null,
+                firstname: null,
                 email: null,
                 password: null,
                 conf_password: null
             }
         },
         methods:{
-            onChangeInput(){
+            onChangeInput(password){
                 // 8 caracteres 1 letra maiscula
                 const passwordRegex = /^(?=.*[A-Z])[0-9a-zA-Z$*&@#]{8,}$/;
-                if (passwordRegex.test(this.password)) {
-                // Password is valid
-                //show message
-                console.log("Valido");
-                } else {
+                if (!passwordRegex.test(password)) {
                 // Password is not valid
                 console.log("Invalido");
+                    var inputInvalid = document.querySelector('#password');
+                    console.log(inputInvalid);
+                    inputInvalid.style.border = "3px solid rgb(210, 63, 63)";
+                    setTimeout(() =>{
+                        inputInvalid.style.border = "none"
+                        inputInvalid.value = ""
+                    }, "900");
+                    return;
+                }    
+            },
+            verifyConfirmPassword(password){
+                if(this.password !== password){
+                    console.log("Invalido");
+                    var inputInvalid = document.querySelector('#pass_def');
+                    console.log(inputInvalid);
+                    inputInvalid.style.border = "3px solid rgb(210, 63, 63)";
+                    setTimeout(() =>{
+                        inputInvalid.style.border = "none"
+                        inputInvalid.value = ""
+                    }, "900")
+                   
+                    return;
                 }
             },
-            async createANewUser(e){
+            async hashPassword(password) {
+                const encoder = new TextEncoder();
+                const data = encoder.encode(password);
+                const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                const hashHex = hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
+                return hashHex;
+            },
 
+            async createANewUser(e){
+                e.preventDefault();
+                //this.verifyConfirmPassword();
+
+                const hashPassword = await this.hashPassword(this.password);
+
+                console.log(hashPassword)
+
+                const data = {
+                    firstname : this.firstname,
+                    email: this.email,
+                    password : hashPassword
+                }
+
+
+                const dataJSON = JSON.stringify(data)
+
+                const response = await fetch('http://localhost:8084/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-type': 'application/json',
+                        'Access-Control-Allow-Origin': 'http://localhost:8080',
+                        'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept'
+                    },
+                    body: dataJSON
+                })
+
+                const resp = await response;
+                if(resp.ok){
+                    console.log("Sucesso")
+                    
+                }
+                
             }
         }
     }
@@ -65,11 +127,24 @@
     flex-direction: column;
     align-items: center;
 }
+.icons-put {
+    position: absolute;
+    margin-top: 10px;
+    margin-left: 10px;
+    color: #FFAC33;
+}
+.password-rules{
+    margin-bottom: 10px;
+}
+.pointer{
+    font-size: 0.5em;
+}
 h1{
     font-weight: 400;
     color: #FFFFFF;
     font-size: 3em;
 }
+
 .sub-container{
     height: 60vh;
     display: flex;
@@ -84,13 +159,16 @@ h1{
 }
 
 .input-form{
-    width: 325px;
+    width: 330px;
     height: 3.5vh;
     margin-bottom: 20px;
-    padding: 15px;
+    padding-left: 35px;
     border: none;
     border-radius: 15px;
     font-size: 1em;
+}
+.input-form:focus{
+    outline: none;
 }
 #btn-enter{
     width: 150px;

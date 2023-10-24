@@ -1,6 +1,7 @@
 package com.apisys.back.service;
 
 import com.apisys.back.security.TokenService;
+import com.apisys.back.user.Role;
 import com.apisys.back.user.User;
 import com.apisys.back.user.dto.LoginDTO;
 import com.apisys.back.user.dto.LoginResponseDTO;
@@ -33,9 +34,6 @@ public class AuthenticationService implements UserDetailsService {
     @Autowired
     private TokenService tokenService;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return userRepository.findByEmail(email);
@@ -54,9 +52,9 @@ public class AuthenticationService implements UserDetailsService {
 
     public ResponseEntity<Object> register (@RequestBody RegisterDTO registerDto){
         if (this.userRepository.findByEmail(registerDto.email()) != null ) return ResponseEntity.badRequest().build();
-        String encryptedPassword = passwordEncoder.encode(registerDto.password());
 
-        User newUser = new User(registerDto.email(), encryptedPassword, registerDto.role());
+        User newUser = new User(registerDto.firstname(), registerDto.email(), registerDto.password());
+        newUser.setRole(Role.USER);
         newUser.setCreatedAt(new Date(System.currentTimeMillis()));
         this.userRepository.save(newUser);
         return ResponseEntity.ok().build();

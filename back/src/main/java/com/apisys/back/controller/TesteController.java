@@ -12,6 +12,7 @@ public class TesteController {
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')") // for admin methods
     public String authorizedMessage(){
-        return "You are a admin user!!";
+        String message = "YOU ARE A ADMIN USER !!" ;
+        return message.toUpperCase();
     }
 }

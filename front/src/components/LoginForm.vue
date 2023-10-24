@@ -5,12 +5,12 @@
             <form id="form_validation" @submit="sendValidationForm">
                 <div class="message_span" hidden><p>{{ message }}</p></div>
                 <div class="content-form">
-                    <label for=""></label>
-                    <input class="input-form" type="text" id="email" name="email" v-model="email" placeholder="Username">
+                    <i class="fa-solid fa-envelope"></i>
+                    <input class="input-form" type="text" id="email" name="email" v-model="email" placeholder=" E-mail">
                 </div>
                 <div class="content-form">
-                    <label for=""></label>
-                    <input class="input-form" type="password" name="password" id="password" v-model="password" placeholder="Password" @change="onChangeInput(password)">
+                    <i class="fa-solid fa-lock"></i>
+                    <input class="input-form" type="password" name="password" id="password" v-model="password" placeholder=" Password" >
                 </div>
                 <button id="btn-enter" type="submit">ENTER</button>                  
             </form>
@@ -47,19 +47,7 @@ import axios from "axios";
 
                 axios.post("http://localhost:8084/api/user/login", data).then((resp) => {
                     //console.log(resp.data.message);
-                    if(resp.data.status === false){
-                        let message = document.querySelector('.message_span');
-                           message.removeAttribute("hidden");
-                            this.message = resp.data.message
-                        setTimeout(() => {
-                           // console.log("Delayed for 1 second.");
-                          message.setAttribute('hidden', true);
-                          this.message = null;
-                        }, "5000");
-                        
-                    } else{
-                        this.$router.push('/home');
-                    }
+                    console.log(resp);
                 });
 
             }

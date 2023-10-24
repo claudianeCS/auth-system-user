@@ -22,6 +22,7 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
+    private String name;
     private String email;
     private String password;
     @Enumerated(EnumType.STRING)
@@ -35,19 +36,20 @@ public class User implements UserDetails {
     @Column(name = "updated_at", nullable = true)
     private Date updatedAt;
 
-
-
-    public User(String email, String password, Role role) {
+    public User(String name, String email, String password) {
         this.email = email;
         this.password = password;
-        this.role = role;
+        this.name = name;
     }
 
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if (this.role == role.ADMIN) return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
-        else return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        if (this.role == role.ADMIN){
+            return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
+        } else {
+            return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        }
     }
     @Override
     public String getPassword() {
