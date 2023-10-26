@@ -13,14 +13,14 @@
                 </div>
                 <div class="content-form">
                     <i class="icons-put fa-solid fa-lock"></i>
-                    <input class="input-form invalid-password" type="password" id="password" name="passoword" v-model="password" placeholder=" Password" @change="onChangeInput(password)">
+                    <input class="input-form invalid-password" type="password" id="password" name="passoword" v-model="password" placeholder=" Password" @change="onChangeInput(password)" required>
                 </div>
                 <div class="password-rules">
                     <i class="pointer fa-solid fa-circle fa-2xs"></i> One uppercase letter and 8 characters.
                 </div>
                 <div class="content-form">
                     <i class="icons-put fa-solid fa-lock"></i>
-                    <input class="input-form" type="password" id="pass_def" name="pass_def" v-model="conf_password" placeholder=" Confirm password">
+                    <input class="input-form" type="password" id="pass_def" name="pass_def" v-model="conf_password" placeholder=" Confirm password" required>
                 </div>
                 <button id="btn-enter" type="submit">ENTER</button>   
             </form>
@@ -57,17 +57,15 @@ import axios from 'axios';
                     return;
                 }    
             },
-            verifyConfirmPassword(password){
-                if(this.password !== password){
-                    console.log("Invalido");
+            verifyConfirmPassword(){
+                if(this.password != this.conf_password){
                     var inputInvalid = document.querySelector('#pass_def');
-                    console.log(inputInvalid);
+                    //console.log(inputInvalid);
                     inputInvalid.style.border = "3px solid rgb(210, 63, 63)";
                     setTimeout(() =>{
                         inputInvalid.style.border = "none"
                         inputInvalid.value = ""
                     }, "900")
-                   
                     return;
                 }
             },
@@ -82,11 +80,9 @@ import axios from 'axios';
 
             async createANewUser(e){
                 e.preventDefault();
-                //this.verifyConfirmPassword();
+                this.verifyConfirmPassword();
 
                 const hashPassword = await this.hashPassword(this.password);
-
-                console.log(hashPassword)
 
                 const data = {
                     firstname : this.firstname,
@@ -110,7 +106,7 @@ import axios from 'axios';
                 const resp = await response;
                 if(resp.ok){
                     console.log("Sucesso")
-                    
+                    this.$router.push('/login');
                 }
                 
             }

@@ -1,4 +1,6 @@
 package com.apisys.back.user.dto;
 
-public record LoginResponseDTO(String token) {
+import com.apisys.back.user.Role;
+
+public record LoginResponseDTO(String token, Role role) {
 }

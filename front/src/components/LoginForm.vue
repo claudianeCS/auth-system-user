@@ -5,11 +5,11 @@
             <form id="form_validation" @submit="sendValidationForm">
                 <div class="message_span" hidden><p>{{ message }}</p></div>
                 <div class="content-form">
-                    <i class="fa-solid fa-envelope"></i>
+                    <i class=" icons-put fa-solid fa-envelope"></i>
                     <input class="input-form" type="text" id="email" name="email" v-model="email" placeholder=" E-mail">
                 </div>
                 <div class="content-form">
-                    <i class="fa-solid fa-lock"></i>
+                    <i class="icons-put fa-solid fa-lock"></i>
                     <input class="input-form" type="password" name="password" id="password" v-model="password" placeholder=" Password" >
                 </div>
                 <button id="btn-enter" type="submit">ENTER</button>                  
@@ -23,7 +23,6 @@
 </template>
 
 <script>
-import axios from "axios";
 
     export default{
         name:'LoginForm',
@@ -44,12 +43,6 @@ import axios from "axios";
                     password: this.password
                 }
                // const valiJSON = JSON.stringify(data);
-
-                axios.post("http://localhost:8084/api/user/login", data).then((resp) => {
-                    //console.log(resp.data.message);
-                    console.log(resp);
-                });
-
             }
         }
     }
@@ -77,11 +70,17 @@ h1{
     justify-content: space-evenly;
     align-items: center;
 }
+.icons-put {
+    position: absolute;
+    margin-top: 10px;
+    margin-left: 10px;
+    color: #FFAC33;
+}
 .input-form{
-    width: 300px;
+    width: 330px;
     height: 3.5vh;
     margin-bottom: 20px;
-    padding: 15px;
+    padding-left: 35px;
     border: none;
     border-radius: 15px;
     font-size: 1em;

@@ -34,6 +34,9 @@ public class AuthenticationService implements UserDetailsService {
     @Autowired
     private TokenService tokenService;
 
+    @Autowired
+   private PasswordEncoder passwordEncoder;
+
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return userRepository.findByEmail(email);
@@ -47,17 +50,30 @@ public class AuthenticationService implements UserDetailsService {
         var usernamePassword = new UsernamePasswordAuthenticationToken(data.email(), data.password());
         var auth = this.authenticationManager.authenticate(usernamePassword);
         var token = tokenService.generateToken((User) auth.getPrincipal());
-        return ResponseEntity.ok(new LoginResponseDTO(token));
+
+        // get a role of this user
+        Role userDetailsRole = userRepository.findByEmail(data.email()).getRole();
+
+        return ResponseEntity.ok(new LoginResponseDTO(token, userDetailsRole));
     }
 
     public ResponseEntity<Object> register (@RequestBody RegisterDTO registerDto){
-        if (this.userRepository.findByEmail(registerDto.email()) != null ) return ResponseEntity.badRequest().build();
+        if (this.userRepository.findByEmail(registerDto.email()) != null ) {
+            return ResponseEntity.badRequest().build();
+        }
 
-        User newUser = new User(registerDto.firstname(), registerDto.email(), registerDto.password());
+        String encodedPassword = hashPasswordWithBCript(registerDto.password());
+
+        User newUser = new User(registerDto.firstname(), registerDto.email(), encodedPassword);
         newUser.setRole(Role.USER);
-        newUser.setCreatedAt(new Date(System.currentTimeMillis()));
+        newUser.setCreatedAt(new Date());
         this.userRepository.save(newUser);
         return ResponseEntity.ok().build();
+    }
+
+    public String hashPasswordWithBCript(String passowrdHash){
+        String bcryptPassword = passwordEncoder.encode(passowrdHash);
+        return bcryptPassword;
     }
 
 }
