@@ -8,6 +8,8 @@ Auth System Login
 * JWT
 * SpringBoot
 * SpringSecurity
+* Vue JS
+* Router, Hooks
 
 ## endpoints api
 *  `/auth/register` 
