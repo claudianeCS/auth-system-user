@@ -8,7 +8,10 @@ Auth System Login
 * JWT
 * SpringBoot
 * SpringSecurity
+* Vue JS
+* Router, Hooks
 
-## endpoints
-For create a new user `/auth/register` 
-and into in login action `/auth/login`
+## endpoints api
+*  `/auth/register` 
+* `/auth/login`
+
