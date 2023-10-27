@@ -4,19 +4,20 @@
       <img class="image_index" src="../assets/Designsemnome1.png" alt="">
     </div>
     <div class="sub-register">
-      <LoginRegister/>
+      <RegisterForm/>
     </div>
 
   </div>
 
 </template>
 <script>
-import LoginRegister from '@/components/LoginRegister.vue';
+import RegisterForm from '@/components/RegisterForm.vue'
+
 
   export default{
     name: 'Register',
     components:{
-      LoginRegister
+      RegisterForm
     }
   }
 </script>

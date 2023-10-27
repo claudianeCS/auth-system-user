@@ -28,10 +28,11 @@
     </div>
 </template>
 <script>
-import axios from 'axios';
+import api from '@/api';
+import router from '@/router';
 
     export default{
-        name:'LoginRegister',
+        name:'RegisterForm',
         data(){
             return{
                 firstname: null,
@@ -69,45 +70,37 @@ import axios from 'axios';
                     return;
                 }
             },
-            async hashPassword(password) {
-                const encoder = new TextEncoder();
-                const data = encoder.encode(password);
-                const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-                const hashArray = Array.from(new Uint8Array(hashBuffer));
-                const hashHex = hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
-                return hashHex;
-            },
-
             async createANewUser(e){
                 e.preventDefault();
                 this.verifyConfirmPassword();
 
-                const hashPassword = await this.hashPassword(this.password);
-
                 const data = {
                     firstname : this.firstname,
                     email: this.email,
-                    password : hashPassword
+                    password : this.password
+                }
+
+                if(data != null){
+                    
+                    const dataJSON = JSON.stringify(data)
+
+                    api.post('/auth/register', dataJSON, {
+                        headers: {
+                            'Content-type': 'application/json',
+                            'Access-Control-Allow-Origin': 'http://localhost:8080',
+                            'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept'
+                        }
+                    }).then((response) => {
+                        if(response.status === 200){
+                            router.push('/')
+                        }
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
                 }
 
 
-                const dataJSON = JSON.stringify(data)
-
-                const response = await fetch('http://localhost:8084/auth/register', {
-                    method: 'POST',
-                    headers: {
-                        'Content-type': 'application/json',
-                        'Access-Control-Allow-Origin': 'http://localhost:8080',
-                        'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept'
-                    },
-                    body: dataJSON
-                })
-
-                const resp = await response;
-                if(resp.ok){
-                    console.log("Sucesso")
-                    this.$router.push('/login');
-                }
                 
             }
         }

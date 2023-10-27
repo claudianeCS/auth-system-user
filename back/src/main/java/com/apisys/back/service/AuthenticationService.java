@@ -16,10 +16,13 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 
 @Service
@@ -44,17 +47,21 @@ public class AuthenticationService implements UserDetailsService {
 
     private AuthenticationManager authenticationManager;
 
-    public ResponseEntity<Object> login(@RequestBody @Valid LoginDTO data){
+    public ResponseEntity<Object> login(@RequestBody @Valid LoginDTO data) {
         authenticationManager = context.getBean(AuthenticationManager.class);
 
-        var usernamePassword = new UsernamePasswordAuthenticationToken(data.email(), data.password());
-        var auth = this.authenticationManager.authenticate(usernamePassword);
-        var token = tokenService.generateToken((User) auth.getPrincipal());
+        UserDetails userDetails = loadUserByUsername(data.email());
+        if (passwordEncoder.matches(data.password(), userDetails.getPassword())){
+            var usernamePassword = new UsernamePasswordAuthenticationToken(data.email(), data.password());
+            var auth = this.authenticationManager.authenticate(usernamePassword);
+            var token = tokenService.generateToken((User) auth.getPrincipal());
 
-        // get a role of this user
-        Role userDetailsRole = userRepository.findByEmail(data.email()).getRole();
-
-        return ResponseEntity.ok(new LoginResponseDTO(token, userDetailsRole));
+            // get a role of this user
+            Role userDetailsRole = userRepository.findByEmail(data.email()).getRole();
+            return ResponseEntity.ok(new LoginResponseDTO(token, userDetailsRole));
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     public ResponseEntity<Object> register (@RequestBody RegisterDTO registerDto){
@@ -72,8 +79,8 @@ public class AuthenticationService implements UserDetailsService {
     }
 
     public String hashPasswordWithBCript(String passowrdHash){
-        String bcryptPassword = passwordEncoder.encode(passowrdHash);
+        String salt = BCrypt.gensalt();
+        String bcryptPassword = passwordEncoder.encode(salt + passowrdHash);
         return bcryptPassword;
     }
-
 }

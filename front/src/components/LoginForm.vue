@@ -23,6 +23,8 @@
 </template>
 
 <script>
+import api from '@/api';
+import axios from 'axios';
 
     export default{
         name:'LoginForm',
@@ -33,7 +35,7 @@
                 message: null
             }
         },
-        methods:{      
+        methods:{  
             async sendValidationForm(e){
                 e.preventDefault();
                 console.log("Login enviado!!");
@@ -42,7 +44,17 @@
                     email: this.email,
                     password: this.password
                 }
-               // const valiJSON = JSON.stringify(data);
+                const dataJSON = JSON.stringify(data);
+
+                api.post('/auth/login', dataJSON, {
+                    headers: {
+                        'Content-type': 'application/json',
+                        'Access-Control-Allow-Origin': 'http://localhost:8080',
+                        'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept'
+                    }
+                }).then((response) => {
+                    console.log(response);
+                })
             }
         }
     }

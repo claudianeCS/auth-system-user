@@ -33,13 +33,17 @@ public class User implements UserDetails {
     private Date createdAt;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "updated_at", nullable = true)
+    @Column(name = "updated_at")
     private Date updatedAt;
 
     public User(String name, String email, String password) {
         this.email = email;
         this.password = password;
         this.name = name;
+    }
+    public User( String email, String password) {
+        this.email = email;
+        this.password = password;
     }
 
     public Role getRole() {
