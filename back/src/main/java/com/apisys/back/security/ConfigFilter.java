@@ -3,6 +3,7 @@ package com.apisys.back.security;
 import com.apisys.back.user.repo.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,11 +27,20 @@ public class ConfigFilter extends OncePerRequestFilter{
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         var token = this.recoverToken(request);
 
+        String jwtToken = null;
+
+
+        for(Cookie cookie : request.getCookies()){
+            if (cookie.getName().equals("apisys")){
+                jwtToken = cookie.getValue();
+            }
+        }
+
         if (token != null) {
-            var email = tokenService.validateToken(token);
+            var email = tokenService.validateToken(jwtToken);
             UserDetails user = userRepository.findByEmail(email);
 
-            if (user != null) {
+            if (user != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }

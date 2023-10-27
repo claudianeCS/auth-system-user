@@ -7,6 +7,8 @@ import com.apisys.back.user.dto.LoginDTO;
 import com.apisys.back.user.dto.LoginResponseDTO;
 import com.apisys.back.user.dto.RegisterDTO;
 import com.apisys.back.user.repo.UserRepository;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -16,13 +18,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 
 @Service
@@ -47,10 +46,11 @@ public class AuthenticationService implements UserDetailsService {
 
     private AuthenticationManager authenticationManager;
 
-    public ResponseEntity<Object> login(@RequestBody @Valid LoginDTO data) {
+    public ResponseEntity<Object> login(@RequestBody @Valid LoginDTO data,  HttpServletResponse response) {
+
         authenticationManager = context.getBean(AuthenticationManager.class);
 
-        UserDetails userDetails = loadUserByUsername(data.email());
+        var userDetails = loadUserByUsername(data.email());
         if (passwordEncoder.matches(data.password(), userDetails.getPassword())){
             var usernamePassword = new UsernamePasswordAuthenticationToken(data.email(), data.password());
             var auth = this.authenticationManager.authenticate(usernamePassword);
@@ -58,6 +58,12 @@ public class AuthenticationService implements UserDetailsService {
 
             // get a role of this user
             Role userDetailsRole = userRepository.findByEmail(data.email()).getRole();
+            Cookie cookie = new Cookie("apisys", token);
+            cookie.setMaxAge(7 * 24 * 60 * 60);
+            cookie.setHttpOnly(true);
+            cookie.setPath("/");
+            response.addCookie(cookie);
+
             return ResponseEntity.ok(new LoginResponseDTO(token, userDetailsRole));
         } else {
             return ResponseEntity.badRequest().build();
@@ -79,8 +85,8 @@ public class AuthenticationService implements UserDetailsService {
     }
 
     public String hashPasswordWithBCript(String passowrdHash){
-        String salt = BCrypt.gensalt();
-        String bcryptPassword = passwordEncoder.encode(salt + passowrdHash);
+        String bcryptPassword = passwordEncoder.encode(passowrdHash);
         return bcryptPassword;
     }
+
 }

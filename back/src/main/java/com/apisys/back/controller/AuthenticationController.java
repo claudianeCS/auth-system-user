@@ -24,7 +24,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Object> login(@RequestBody @Valid LoginDTO loginDTO) throws NoSuchAlgorithmException {
+    public ResponseEntity<Object> login(@RequestBody @Valid LoginDTO loginDTO) {
         return authenticationService.login(loginDTO);
     }
 

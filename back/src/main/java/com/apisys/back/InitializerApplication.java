@@ -25,8 +25,7 @@ public class InitializerApplication implements ApplicationRunner {
     public void run(ApplicationArguments args) throws Exception {
 
         if (userRepository.findByEmail("apisys@teste.com") == null){
-            String salt = BCrypt.gensalt();
-            User user = new User("root", "apisys@teste.com", passwordEncoder.encode(salt + "12348765"));
+            User user = new User("root", "apisys@teste.com", passwordEncoder.encode( "12348765"));
             user.setRole(Role.ADMIN);
             user.setCreatedAt(new Date());
             userRepository.save(user);

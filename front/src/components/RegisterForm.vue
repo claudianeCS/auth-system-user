@@ -46,7 +46,6 @@ import router from '@/router';
                 // 8 caracteres 1 letra maiscula
                 const passwordRegex = /^(?=.*[A-Z])[0-9a-zA-Z$*&@#]{8,}$/;
                 if (!passwordRegex.test(password)) {
-                // Password is not valid
                 console.log("Invalido");
                     var inputInvalid = document.querySelector('#password');
                     console.log(inputInvalid);
