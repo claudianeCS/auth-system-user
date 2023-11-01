@@ -27,17 +27,10 @@ public class ConfigFilter extends OncePerRequestFilter{
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         var token = this.recoverToken(request);
 
-        String jwtToken = null;
-
-
-        for(Cookie cookie : request.getCookies()){
-            if (cookie.getName().equals("apisys")){
-                jwtToken = cookie.getValue();
-            }
-        }
+       // String jwtToken = null;
 
         if (token != null) {
-            var email = tokenService.validateToken(jwtToken);
+            var email = tokenService.validateToken(token);
             UserDetails user = userRepository.findByEmail(email);
 
             if (user != null && SecurityContextHolder.getContext().getAuthentication() == null) {

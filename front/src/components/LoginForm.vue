@@ -49,7 +49,6 @@ import axios from 'axios';
                 api.post('/auth/login', dataJSON, {
                     headers: {
                         'Content-type': 'application/json',
-                        'Access-Control-Allow-Origin': 'http://localhost:8080',
                         'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept'
                     }
                 }).then((response) => {
