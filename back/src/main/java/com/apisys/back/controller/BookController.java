@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
 import java.util.List;
 
 @RestController
@@ -17,6 +18,11 @@ public class BookController {
     @Autowired
     private BookService bookService;
 
+    @GetMapping
+    public String bookMessage(){
+        return "Bem vindo a livraria";
+    }
+
     @GetMapping("/all")
     public ResponseEntity<List<Books>> listAll(){
         return bookService.listAllBooks();
@@ -24,7 +30,7 @@ public class BookController {
 
     @PostMapping("/new/register")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Object> createBookRegister(@RequestBody BookDTO bookDTO){
+    public ResponseEntity<Object> createBookRegister(@RequestBody BookDTO bookDTO) throws ParseException {
         return bookService.createBookRegister(bookDTO);
     }
 }

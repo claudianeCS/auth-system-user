@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
 import java.util.UUID;
 
 @Entity
@@ -22,11 +23,14 @@ public class Books {
 
     private String title;
 
-    private Integer publishYear;
+    @Temporal(TemporalType.DATE)
+    private Date publishYear;
 
     private Integer amount; // qtd
 
-    public Books(String title, Integer publishYear, Integer amount, String synopsis) {
+    private String urlImage;
+
+    public Books(String title, Date publishYear, Integer amount, String synopsis) {
         this.title = title;
         this.publishYear = publishYear;
         this.amount = amount;

@@ -30,11 +30,8 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/auth").permitAll()
-                      //  .requestMatchers("/auth/set-cookie").permitAll()
                         .requestMatchers(HttpMethod.POST,"/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
-                        //.requestMatchers(HttpMethod.POST, "/books/new/register").hasRole("ADMIN")
-                        .requestMatchers("/sucess").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(configFilter, UsernamePasswordAuthenticationFilter.class)

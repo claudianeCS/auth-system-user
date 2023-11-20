@@ -91,7 +91,7 @@ import router from '@/router';
                         }
                     }).then((response) => {
                         if(response.status === 200){
-                            router.push('/')
+                            router.push('/home')
                         }
                     })
                     .catch(function (error) {
