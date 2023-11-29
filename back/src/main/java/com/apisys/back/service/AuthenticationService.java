@@ -41,7 +41,6 @@ public class AuthenticationService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return userRepository.findByEmail(email);
     }
-
     private AuthenticationManager authenticationManager;
 
     public LoginResponseDTO login(@RequestBody @Valid LoginDTO data) {
@@ -52,7 +51,10 @@ public class AuthenticationService implements UserDetailsService {
         if (passwordEncoder.matches(data.password(), userDetails.getPassword())){
             var usernamePassword = new UsernamePasswordAuthenticationToken(data.email(), data.password());
             var auth = this.authenticationManager.authenticate(usernamePassword);
+
             var token = tokenService.generateToken((User) auth.getPrincipal());
+
+           // tokenService.veriftyIfTokenExpires(token);
 
             // get a role of this user
             Role userDetailsRole = userRepository.findByEmail(data.email()).getRole();
@@ -73,6 +75,10 @@ public class AuthenticationService implements UserDetailsService {
         newUser.setRole(Role.USER);
         newUser.setCreatedAt(new Date());
         this.userRepository.save(newUser);
+
+        //create a imageURL directory for save a image
+
+
         return ResponseEntity.ok().build();
     }
 
